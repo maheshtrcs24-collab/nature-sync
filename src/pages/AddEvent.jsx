@@ -5,6 +5,7 @@ import GlassCard from '../components/ui/GlassCard';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import { Upload } from 'lucide-react';
+import { API_URL } from '../lib/api';
 
 const AddEvent = () => {
     const navigate = useNavigate();
@@ -42,7 +43,7 @@ const AddEvent = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:5000/api/events', {
+            const response = await fetch(`${API_URL}/api/events`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

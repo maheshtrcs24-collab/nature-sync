@@ -4,6 +4,8 @@ import { Calendar, MapPin, Clock } from 'lucide-react';
 import GlassCard from '../components/ui/GlassCard';
 import Button from '../components/ui/Button';
 
+import { API_URL } from '../lib/api';
+
 const ExploreEvents = () => {
     const [events, setEvents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -15,7 +17,7 @@ const ExploreEvents = () => {
     const fetchEvents = async () => {
         try {
             setLoading(true);
-            const response = await fetch('http://localhost:5000/api/events');
+            const response = await fetch(`${API_URL}/api/events`);
             if (!response.ok) throw new Error('Failed to fetch events');
 
             const data = await response.json();
