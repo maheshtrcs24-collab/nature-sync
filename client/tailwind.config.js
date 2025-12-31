@@ -7,18 +7,21 @@ export default {
     theme: {
         extend: {
             colors: {
-                primary: {
-                    50: '#f0f9f1',
-                    100: '#dcf1df',
-                    200: '#bbe3c2',
-                    300: '#8ecc98',
-                    400: '#5bab69',
-                    500: '#3a8d4a',
-                    600: '#2a7139',
-                    700: '#235a30',
-                    800: '#1f4829',
-                    900: '#1a3c24',
+                spotify: {
+                    black: '#121212',
+                    dark: '#181818',
+                    light: '#282828',
+                    green: '#1DB954',
+                    gray: '#B3B3B3',
                 },
+                primary: {
+                    50: '#f0fdf4',
+                    500: '#22c55e',
+                    600: '#16a34a',
+                },
+            },
+            backgroundImage: {
+                'gradient-spotify': 'linear-gradient(rgba(0,0,0,0) 0, #121212 100%)',
             },
         },
     },

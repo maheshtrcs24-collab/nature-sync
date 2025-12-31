@@ -7,12 +7,39 @@
 }
 
 body {
-  @apply bg-slate-50 text-slate-900;
+  @apply bg-spotify-black text-white;
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  overflow: hidden;
+  /* We will handle scrolling in the main content area */
 }
 
-h1, h2, h3, h4, h5, h6 {
-  @apply font-bold tracking-tight text-slate-800;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-bold tracking-tight text-white;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  border: 4px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+  background-clip: padding-box;
 }
