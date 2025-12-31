@@ -33,14 +33,8 @@ const AddEvent = () => {
         e.preventDefault();
         setLoading(true);
 
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) {
-            alert("You must be logged in to create an event.");
-            setLoading(false);
-            navigate('/login');
-            return;
-        }
+        // Auth check removed for anonymous posting
+        // const { data: { user } } = await supabase.auth.getUser();
 
         try {
             const response = await fetch(`${API_URL}/api/events`, {
@@ -50,7 +44,7 @@ const AddEvent = () => {
                 },
                 body: JSON.stringify({
                     ...formData,
-                    user_id: user.id
+                    // user_id: user.id (Optional/Anonymous)
                 })
             });
 

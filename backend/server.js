@@ -42,9 +42,10 @@ app.get('/api/events', async (req, res) => {
 app.post('/api/events', async (req, res) => {
     const { title, date, time, location, category, description, spots_total, image_url, user_id } = req.body;
 
-    if (!user_id) {
-        return res.status(401).json({ error: 'User ID is required' });
-    }
+    // user_id is now optional for anonymous posts
+    // if (!user_id) {
+    //     return res.status(401).json({ error: 'User ID is required' });
+    // }
 
     try {
         // Note: In a real app, you'd verify a JWT token here.
@@ -55,7 +56,7 @@ app.post('/api/events', async (req, res) => {
             .insert([
                 {
                     title, date, time, location, category, description, spots_total, image_url,
-                    created_by: user_id,
+                    created_by: user_id || null, // Allow null for anonymous
                     // spots_taken defaults to 0 in DB
                 }
             ])
