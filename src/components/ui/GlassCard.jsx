@@ -14,7 +14,9 @@ const GlassCard = ({ children, className, hoverEffect = true, ...props }) => {
             )}
             {...props}
         >
-            {children}
+            <div className="relative z-10">
+                {children}
+            </div>
         </motion.div>
     );
 };

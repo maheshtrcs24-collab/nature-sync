@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 
 const Input = ({ label, className, ...props }) => {
     return (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 relative z-20">
             {label && <label className="text-sm font-medium text-gray-400 ml-1">{label}</label>}
             <input
                 className={twMerge(

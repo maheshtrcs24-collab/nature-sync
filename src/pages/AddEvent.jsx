@@ -41,18 +41,28 @@ const AddEvent = () => {
             return;
         }
 
-        const { data, error } = await supabase
-            .from('events')
-            .insert([
-                { ...formData, created_by: user.id }
-            ]);
+        try {
+            const response = await fetch('http://localhost:5000/api/events', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    ...formData,
+                    user_id: user.id
+                })
+            });
 
-        if (error) {
-            console.error(error);
-            alert('Error creating event: ' + error.message);
-        } else {
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to create event');
+            }
+
             alert('Event created successfully!');
             navigate('/explore');
+        } catch (error) {
+            console.error(error);
+            alert('Error creating event: ' + error.message);
         }
         setLoading(false);
     };
