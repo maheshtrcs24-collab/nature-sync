@@ -15,10 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 // Clerk Configuration
-const clerkSecretKey = process.env.CLERK_SECRET_KEY;
-if (!clerkSecretKey) {
-    console.error('CLERK_SECRET_KEY is missing');
-}
+const clerkSecretKey = "sk_test_0gApAPC8ABDP7gq2e0QTorulBJy2JllYoGrIS5qdsM";
 
 
 // Supabase Init

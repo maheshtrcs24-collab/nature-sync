@@ -9,16 +9,10 @@ import { API_URL } from '../lib/api';
 
 import { SignInButton, useAuth, useUser } from '@clerk/clerk-react';
 
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-
 const AddEvent = () => {
     const navigate = useNavigate();
-    // Only call hooks if Clerk is active to avoid context errors
-    const clerkAuth = PUBLISHABLE_KEY ? useAuth() : { isLoaded: true, userId: null, getToken: () => null };
-    const clerkUser = PUBLISHABLE_KEY ? useUser() : { isLoaded: true, user: null };
-
-    const { isLoaded, userId, getToken } = clerkAuth;
-    const { user } = clerkUser;
+    const { isLoaded, userId, getToken } = useAuth();
+    const { user } = useUser();
 
     const [formData, setFormData] = useState({
         title: '',
