@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Menu, X, Home, Compass, PlusCircle, User } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
 
 const NavItem = ({ to, icon: Icon, label, isActive }) => (
     <Link
@@ -20,7 +21,7 @@ const NavItem = ({ to, icon: Icon, label, isActive }) => (
     </Link>
 );
 
-import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
