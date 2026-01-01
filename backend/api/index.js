@@ -104,16 +104,30 @@ app.post('/api/events/:id/join', ClerkExpressWithAuth(), async (req, res) => {
 
         if (regError) throw regError;
 
-        // 3. Increment spots_taken
-        const { data: event } = await supabase.from('events').select('spots_taken').eq('id', eventId).single();
-        await supabase
+        // 3. Update spots_taken (Atomic-like)
+        const { data: event, error: fetchError } = await supabase
             .from('events')
-            .update({ spots_taken: (event.spots_taken || 0) + 1 })
+            .select('spots_total, spots_taken')
+            .eq('id', eventId)
+            .single();
+
+        if (fetchError || !event) throw new Error('Event not found');
+
+        const currentTaken = event.spots_taken || 0;
+        if (currentTaken >= event.spots_total) {
+            return res.status(400).json({ error: 'No spots available' });
+        }
+
+        const { error: updateError } = await supabase
+            .from('events')
+            .update({ spots_taken: currentTaken + 1 })
             .eq('id', eventId);
+
+        if (updateError) throw updateError;
 
         res.status(200).json({ message: 'Success' });
     } catch (err) {
-        console.error(err);
+        console.error('Join error:', err);
         res.status(500).json({ error: err.message });
     }
 });
