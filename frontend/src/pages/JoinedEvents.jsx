@@ -75,7 +75,14 @@ const JoinedEvents = () => {
                     {events.map((event) => {
                         const isOwner = userId === event.created_by;
                         return (
-                            <GlassCard key={event.id} className="group overflow-hidden flex flex-col h-full">
+                            <GlassCard
+                                key={event.id}
+                                className="group overflow-hidden flex flex-col h-full cursor-pointer"
+                                onClick={(e) => {
+                                    if (e.target.closest('button')) return;
+                                    navigate(`/events/${event.id}`);
+                                }}
+                            >
                                 <div className="h-48 overflow-hidden relative">
                                     <img
                                         src={event.image_url || 'https://images.unsplash.com/photo-1501854140801-50d01698950b?auto=format&fit=crop&q=80'}

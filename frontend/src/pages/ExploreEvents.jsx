@@ -113,7 +113,15 @@ const ExploreEvents = () => {
                         const isOwner = userId === event.created_by;
 
                         return (
-                            <GlassCard key={event.id} className="p-0 flex flex-col h-full group">
+                            <GlassCard
+                                key={event.id}
+                                className="p-0 flex flex-col h-full group cursor-pointer"
+                                onClick={(e) => {
+                                    // Don't navigate if clicking an internal button
+                                    if (e.target.closest('button')) return;
+                                    navigate(`/events/${event.id}`);
+                                }}
+                            >
                                 <div className="h-48 relative overflow-hidden bg-gray-800">
                                     {event.image_url ? (
                                         <img

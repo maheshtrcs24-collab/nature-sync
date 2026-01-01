@@ -7,6 +7,8 @@ import ExploreEvents from './pages/ExploreEvents';
 import AddEvent from './pages/AddEvent';
 import JoinedEvents from './pages/JoinedEvents';
 import EditEvent from './pages/EditEvent';
+import EventDetails from './pages/EventDetails';
+
 
 
 
@@ -21,6 +23,7 @@ function App() {
                     <Route path="/my-events" element={<JoinedEvents />} />
                     <Route path="/add-event" element={<AddEvent />} />
                     <Route path="/edit-event/:id" element={<EditEvent />} />
+                    <Route path="/events/:id" element={<EventDetails />} />
 
                 </Route>
             </Routes>

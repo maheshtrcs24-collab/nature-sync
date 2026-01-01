@@ -52,6 +52,24 @@ app.get('/api/events', async (req, res) => {
     }
 });
 
+// GET /api/events/:id - Fetch single event
+app.get('/api/events/:id', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('events')
+            .select('*')
+            .eq('id', req.params.id)
+            .single();
+
+        if (error) throw error;
+        if (!data) return res.status(404).json({ error: 'Event not found' });
+        res.json(data);
+    } catch (err) {
+        console.error('Error fetching event details:', err);
+        res.status(500).json({ error: 'Failed to fetch event details' });
+    }
+});
+
 // POST /api/events - Create an event (Protected by Clerk)
 app.post('/api/events', ClerkExpressWithAuth(), async (req, res) => {
     if (!req.auth.userId) {
