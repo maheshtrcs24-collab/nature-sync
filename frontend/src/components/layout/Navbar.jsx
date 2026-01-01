@@ -23,6 +23,8 @@ const NavItem = ({ to, icon: Icon, label, isActive }) => (
 
 
 
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
@@ -78,22 +80,30 @@ const Navbar = () => {
                 </div>
 
                 <div className="mt-auto pt-6 border-t border-white/10">
-                    <SignedOut>
-                        <div className="px-4 py-3">
-                            <SignInButton mode="modal">
-                                <button className="flex items-center gap-3 w-full text-gray-400 hover:text-white transition-all">
-                                    <User size={20} />
-                                    <span className="font-medium">Sign In</span>
-                                </button>
-                            </SignInButton>
+                    {PUBLISHABLE_KEY ? (
+                        <>
+                            <SignedOut>
+                                <div className="px-4 py-3">
+                                    <SignInButton mode="modal">
+                                        <button className="flex items-center gap-3 w-full text-gray-400 hover:text-white transition-all">
+                                            <User size={20} />
+                                            <span className="font-medium">Sign In</span>
+                                        </button>
+                                    </SignInButton>
+                                </div>
+                            </SignedOut>
+                            <SignedIn>
+                                <div className="flex items-center gap-3 px-4 py-3">
+                                    <UserButton afterSignOutUrl="/" />
+                                    <span className="text-sm font-medium text-gray-400">Account</span>
+                                </div>
+                            </SignedIn>
+                        </>
+                    ) : (
+                        <div className="px-4 py-3 text-sm text-gray-500 italic">
+                            Auth unavailable
                         </div>
-                    </SignedOut>
-                    <SignedIn>
-                        <div className="flex items-center gap-3 px-4 py-3">
-                            <UserButton afterSignOutUrl="/" />
-                            <span className="text-sm font-medium text-gray-400">Account</span>
-                        </div>
-                    </SignedIn>
+                    )}
                 </div>
             </motion.nav>
 
