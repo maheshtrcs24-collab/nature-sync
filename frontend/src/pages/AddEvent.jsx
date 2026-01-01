@@ -66,8 +66,8 @@ const AddEvent = () => {
             alert('Event created successfully!');
             navigate('/explore');
         } catch (error) {
-            console.error(error);
-            alert('Error creating event: ' + error.message);
+            console.error('Full creation error:', error);
+            alert('Host Event Failed: ' + error.message);
         }
         setLoading(false);
     };

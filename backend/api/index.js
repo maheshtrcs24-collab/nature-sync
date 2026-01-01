@@ -76,7 +76,9 @@ app.post('/api/events', ClerkExpressWithAuth(), async (req, res) => {
         return res.status(401).json({ error: 'Unauthenticated' });
     }
 
-    const { title, date, time, location, category, description, spots_total, image_url } = req.body;
+    const { title, date, time, location, category, description, image_url } = req.body;
+    const spots_total = parseInt(req.body.spots_total) || 0;
+
 
     try {
         const { data, error } = await supabase
