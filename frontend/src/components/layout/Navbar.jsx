@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Menu, X, Home, Compass, PlusCircle, User } from 'lucide-react';
+import { Menu, X, Home, Compass, PlusCircle, User, Heart } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
@@ -32,6 +32,7 @@ const Navbar = () => {
     const links = [
         { to: '/', icon: Home, label: 'Home' },
         { to: '/explore', icon: Compass, label: 'Explore Events' },
+        { to: '/my-events', icon: Heart, label: 'My Events' },
         { to: '/add-event', icon: PlusCircle, label: 'Add Event' },
     ];
 

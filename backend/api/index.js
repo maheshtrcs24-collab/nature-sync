@@ -79,6 +79,72 @@ app.post('/api/events', ClerkExpressWithAuth(), async (req, res) => {
     }
 });
 
+// POST /api/events/:id/join - Join an event
+app.post('/api/events/:id/join', ClerkExpressWithAuth(), async (req, res) => {
+    if (!req.auth.userId) return res.status(401).json({ error: 'Unauthenticated' });
+
+    const eventId = req.params.id;
+    const userId = req.auth.userId;
+
+    try {
+        // 1. Check if already joined
+        const { data: existing } = await supabase
+            .from('registrations')
+            .select('*')
+            .eq('event_id', eventId)
+            .eq('user_id', userId)
+            .single();
+
+        if (existing) return res.status(400).json({ error: 'Already joined this event' });
+
+        // 2. Register
+        const { error: regError } = await supabase
+            .from('registrations')
+            .insert([{ event_id: eventId, user_id: userId }]);
+
+        if (regError) throw regError;
+
+        // 3. Increment spots_taken
+        const { data: event } = await supabase.from('events').select('spots_taken').eq('id', eventId).single();
+        await supabase
+            .from('events')
+            .update({ spots_taken: (event.spots_taken || 0) + 1 })
+            .eq('id', eventId);
+
+        res.status(200).json({ message: 'Success' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// GET /api/user/events - Fetch events joined by current user
+app.get('/api/user/events', ClerkExpressWithAuth(), async (req, res) => {
+    if (!req.auth.userId) return res.status(401).json({ error: 'Unauthenticated' });
+
+    try {
+        const { data: regs, error } = await supabase
+            .from('registrations')
+            .select('event_id')
+            .eq('user_id', req.auth.userId);
+
+        if (error) throw error;
+        if (!regs || regs.length === 0) return res.json([]);
+
+        const eventIds = regs.map(r => r.event_id);
+        const { data: events, error: eventError } = await supabase
+            .from('events')
+            .select('*')
+            .in('id', eventIds);
+
+        if (eventError) throw eventError;
+        res.json(events);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Export for Vercel
 export default app;
 
