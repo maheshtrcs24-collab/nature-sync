@@ -16,10 +16,26 @@ const ExploreEvents = () => {
     const [events, setEvents] = useState([]);
 
     const [loading, setLoading] = useState(true);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
         fetchEvents();
+        checkAdminStatus();
     }, []);
+
+    const checkAdminStatus = async () => {
+        if (!userId) return;
+        try {
+            const token = await getToken();
+            const response = await fetch(`${API_URL}/api/user/role`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            setIsAdmin(data.isAdmin || false);
+        } catch (error) {
+            console.error('Admin check error:', error);
+        }
+    };
 
     const fetchEvents = async () => {
         try {
@@ -111,6 +127,7 @@ const ExploreEvents = () => {
                     {events.map((event) => {
                         const spotsLeft = event.spots_total - (event.spots_taken || 0);
                         const isOwner = userId === event.created_by;
+                        const canManage = isOwner || isAdmin;
 
                         return (
                             <GlassCard
@@ -138,14 +155,16 @@ const ExploreEvents = () => {
                                         {event.category}
                                     </div>
 
-                                    {isOwner && (
+                                    {canManage && (
                                         <div className="absolute top-4 left-4 flex gap-2">
-                                            <button
-                                                onClick={() => navigate(`/edit-event/${event.id}`)}
-                                                className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-primary hover:bg-primary hover:text-black transition-all border border-white/10"
-                                            >
-                                                <Pencil size={16} />
-                                            </button>
+                                            {isOwner && (
+                                                <button
+                                                    onClick={() => navigate(`/edit-event/${event.id}`)}
+                                                    className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-primary hover:bg-primary hover:text-black transition-all border border-white/10"
+                                                >
+                                                    <Pencil size={16} />
+                                                </button>
+                                            )}
                                             <button
                                                 onClick={() => handleDelete(event.id)}
                                                 className="p-2 bg-black/60 backdrop-blur-md rounded-lg text-red-500 hover:bg-red-500 hover:text-white transition-all border border-white/10"

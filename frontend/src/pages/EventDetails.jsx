@@ -13,25 +13,41 @@ const EventDetails = () => {
     const [event, setEvent] = useState(null);
     const [loading, setLoading] = useState(true);
     const [joining, setJoining] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
-        const fetchEvent = async () => {
-            try {
-                const response = await fetch(`${API_URL}/api/events/${id}`);
-                if (!response.ok) throw new Error('Event not found');
-                const data = await response.json();
-                setEvent(data);
-            } catch (error) {
-                console.error('Error fetching event:', error);
-                alert('Event not found');
-                navigate('/explore');
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchEvent();
+        checkAdminStatus();
     }, [id, navigate]);
+
+    const checkAdminStatus = async () => {
+        if (!userId) return;
+        try {
+            const token = await getToken();
+            const response = await fetch(`${API_URL}/api/user/role`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await response.json();
+            setIsAdmin(data.isAdmin || false);
+        } catch (error) {
+            console.error('Admin check error:', error);
+        }
+    };
+
+    const fetchEvent = async () => {
+        try {
+            const response = await fetch(`${API_URL}/api/events/${id}`);
+            if (!response.ok) throw new Error('Event not found');
+            const data = await response.json();
+            setEvent(data);
+        } catch (error) {
+            console.error('Error fetching event:', error);
+            alert('Event not found');
+            navigate('/explore');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const handleJoin = async () => {
         if (!userId) {
@@ -93,6 +109,7 @@ const EventDetails = () => {
 
     const spotsLeft = event.spots_total - (event.spots_taken || 0);
     const isOwner = userId === event.created_by;
+    const canManage = isOwner || isAdmin;
 
     return (
         <div className="max-w-4xl mx-auto space-y-8">
@@ -160,11 +177,13 @@ const EventDetails = () => {
                             </div>
                         </div>
 
-                        {isOwner ? (
+                        {canManage ? (
                             <div className="flex gap-2">
-                                <Button variant="outline" size="sm" onClick={() => navigate(`/edit-event/${id}`)}>
-                                    <Pencil size={16} className="mr-2" /> Edit
-                                </Button>
+                                {isOwner && (
+                                    <Button variant="outline" size="sm" onClick={() => navigate(`/edit-event/${id}`)}>
+                                        <Pencil size={16} className="mr-2" /> Edit
+                                    </Button>
+                                )}
                                 <Button variant="secondary" size="sm" onClick={handleDelete}>
                                     <Trash2 size={16} className="mr-2" /> Delete
                                 </Button>

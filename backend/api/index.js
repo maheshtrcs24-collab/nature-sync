@@ -229,10 +229,42 @@ app.delete('/api/events/:id', ClerkExpressWithAuth(), async (req, res) => {
     const userId = req.auth.userId;
 
     try {
-        // Check ownership
-        const { data: event } = await supabase.from('events').select('created_by').eq('id', eventId).single();
-        if (!event || event.created_by !== userId) {
-            return res.status(403).json({ error: 'Unauthorized to delete this event' });
+        // Get user's email from Clerk
+        const { clerkClient } = await import('@clerk/clerk-sdk-node');
+        const client = clerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+        const user = await client.users.getUser(userId);
+        const userEmail = user.emailAddresses[0]?.emailAddress;
+
+        // Admin list
+        const ADMIN_EMAILS = ['maheshtr.cs24@bmsce.ac.in'];
+        const isAdmin = ADMIN_EMAILS.includes(userEmail);
+
+        // Check ownership (skip for admins)
+        if (!isAdmin) {
+            const { data: event } = await supabase.from('events').select('created_by').eq('id', eventId).single();
+            if (!event || event.created_by !== userId) {
+                return res.status(403).json({ error: 'Unauthorized to delete this event' });
+
+                // GET /api/user/role - Check if user is admin
+                app.get('/api/user/role', ClerkExpressWithAuth(), async (req, res) => {
+                    if (!req.auth.userId) return res.status(401).json({ error: 'Unauthenticated' });
+
+                    try {
+                        const { clerkClient } = await import('@clerk/clerk-sdk-node');
+                        const client = clerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+                        const user = await client.users.getUser(req.auth.userId);
+                        const userEmail = user.emailAddresses[0]?.emailAddress;
+
+                        const ADMIN_EMAILS = ['maheshtr.cs24@bmsce.ac.in'];
+                        const isAdmin = ADMIN_EMAILS.includes(userEmail);
+
+                        res.json({ isAdmin, email: userEmail });
+                    } catch (err) {
+                        console.error(err);
+                        res.status(500).json({ error: err.message });
+                    }
+                });
+            }
         }
 
         const { error } = await supabase.from('events').delete().eq('id', eventId);
