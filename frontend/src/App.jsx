@@ -1,4 +1,5 @@
-import React from 'react';
+import React from 'react'; // Deployment v1.0.2 - Event Joining Live
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Home from './pages/Home';
