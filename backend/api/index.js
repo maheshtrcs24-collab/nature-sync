@@ -16,6 +16,7 @@ app.use(express.json());
 
 // Clerk Configuration
 const clerkSecretKey = "sk_test_0gApAPC8ABDP7gq2e0QTorulBJy2JllYoGrIS5qdsM";
+process.env.CLERK_SECRET_KEY = clerkSecretKey;
 
 
 // Supabase Init
