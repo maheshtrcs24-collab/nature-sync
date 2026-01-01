@@ -74,12 +74,7 @@ const Navbar = () => {
                     ))}
                 </div>
 
-                <div className="mt-auto pt-6 border-t border-white/10">
-                    <Link to="/login" className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white transition-all">
-                        <User size={20} />
-                        <span className="font-medium">Sign In</span>
-                    </Link>
-                </div>
+                {/* Sign In Removed */}
             </motion.nav>
 
             {/* Overlay for mobile */}

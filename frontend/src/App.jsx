@@ -4,7 +4,7 @@ import Layout from './components/layout/Layout';
 import Home from './pages/Home';
 import ExploreEvents from './pages/ExploreEvents';
 import AddEvent from './pages/AddEvent';
-import { Login, Register } from './pages/Auth';
+
 
 function App() {
     return (
@@ -14,8 +14,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/explore" element={<ExploreEvents />} />
                     <Route path="/add-event" element={<AddEvent />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
+
                 </Route>
             </Routes>
         </Router>

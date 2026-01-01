@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabaseClient';
+// import { supabase } from '../lib/supabaseClient'; // Unused now
 import GlassCard from '../components/ui/GlassCard';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
@@ -33,8 +33,7 @@ const AddEvent = () => {
         e.preventDefault();
         setLoading(true);
 
-        // Auth check removed for anonymous posting
-        // const { data: { user } } = await supabase.auth.getUser();
+
 
         try {
             const response = await fetch(`${API_URL}/api/events`, {
