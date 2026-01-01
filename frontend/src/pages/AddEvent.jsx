@@ -14,9 +14,11 @@ const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 const AddEvent = () => {
     const navigate = useNavigate();
     // Only call hooks if Clerk is active to avoid context errors
-    const clerk = PUBLISHABLE_KEY ? useAuth() : { isLoaded: true, userId: null, getToken: () => null };
-    const { isLoaded, userId, getToken } = clerk;
-    const { user } = useUser();
+    const clerkAuth = PUBLISHABLE_KEY ? useAuth() : { isLoaded: true, userId: null, getToken: () => null };
+    const clerkUser = PUBLISHABLE_KEY ? useUser() : { isLoaded: true, user: null };
+
+    const { isLoaded, userId, getToken } = clerkAuth;
+    const { user } = clerkUser;
 
     const [formData, setFormData] = useState({
         title: '',
