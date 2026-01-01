@@ -159,6 +159,59 @@ app.get('/api/user/events', ClerkExpressWithAuth(), async (req, res) => {
     }
 });
 
+// PUT /api/events/:id - Update an event
+app.put('/api/events/:id', ClerkExpressWithAuth(), async (req, res) => {
+    if (!req.auth.userId) return res.status(401).json({ error: 'Unauthenticated' });
+
+    const eventId = req.params.id;
+    const userId = req.auth.userId;
+
+    try {
+        // Check ownership
+        const { data: event } = await supabase.from('events').select('created_by').eq('id', eventId).single();
+        if (!event || event.created_by !== userId) {
+            return res.status(403).json({ error: 'Unauthorized to edit this event' });
+        }
+
+        const { title, date, time, location, category, description, spots_total, image_url } = req.body;
+        const { data, error } = await supabase
+            .from('events')
+            .update({ title, date, time, location, category, description, spots_total, image_url })
+            .eq('id', eventId)
+            .select();
+
+        if (error) throw error;
+        res.json(data[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// DELETE /api/events/:id - Delete an event
+app.delete('/api/events/:id', ClerkExpressWithAuth(), async (req, res) => {
+    if (!req.auth.userId) return res.status(401).json({ error: 'Unauthenticated' });
+
+    const eventId = req.params.id;
+    const userId = req.auth.userId;
+
+    try {
+        // Check ownership
+        const { data: event } = await supabase.from('events').select('created_by').eq('id', eventId).single();
+        if (!event || event.created_by !== userId) {
+            return res.status(403).json({ error: 'Unauthorized to delete this event' });
+        }
+
+        const { error } = await supabase.from('events').delete().eq('id', eventId);
+        if (error) throw error;
+
+        res.json({ message: 'Event deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Export for Vercel
 export default app;
 
