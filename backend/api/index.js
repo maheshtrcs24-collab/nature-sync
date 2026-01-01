@@ -81,29 +81,34 @@ app.post('/api/events', ClerkExpressWithAuth(), async (req, res) => {
 
 
     try {
+        // Strict typing to avoid SQL errors
+        const eventData = {
+            title: String(title || 'Untitled'),
+            date: date, // Format: YYYY-MM-DD
+            time: String(time || ''),
+            location: String(location || ''),
+            category: String(category || 'General'),
+            description: String(description || ''),
+            spots_total: parseInt(spots_total) || 10,
+            spots_taken: 0,
+            image_url: String(image_url || ''),
+            created_by: String(req.auth.userId)
+        };
+
         const { data, error } = await supabase
             .from('events')
-            .insert([
-                {
-                    title,
-                    date,
-                    time,
-                    location,
-                    category,
-                    description,
-                    spots_total: parseInt(spots_total) || 10,
-                    image_url,
-                    created_by: req.auth.userId,
-                    spots_taken: 0
-                }
-            ])
+            .insert([eventData])
             .select();
 
-        if (error) throw error;
+        if (error) {
+            console.error('Supabase Error:', error);
+            return res.status(400).json({ error: error.message });
+        }
+
         res.status(201).json(data[0]);
     } catch (err) {
-        console.error('Error creating event:', err);
-        res.status(500).json({ error: err.message || 'Failed to create event' });
+        console.error('Unexpected Error:', err);
+        res.status(500).json({ error: 'Server exploded: ' + err.message });
     }
 });
 
