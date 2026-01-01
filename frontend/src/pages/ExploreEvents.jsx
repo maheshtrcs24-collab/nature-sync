@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { Calendar, MapPin, Clock, Pencil, Trash2 } from 'lucide-react';
