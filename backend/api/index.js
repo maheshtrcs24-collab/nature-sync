@@ -153,16 +153,16 @@ app.post('/api/events/:id/join', ClerkExpressWithAuth(), async (req, res) => {
         if (regError) throw regError;
 
         // 3. Update spots_taken (Atomic-like)
-        const { data: event, error: fetchError } = await supabase
+        const { data: eventData, error: fetchErr } = await supabase
             .from('events')
             .select('spots_total, spots_taken')
             .eq('id', eventId)
             .single();
 
-        if (fetchError || !event) throw new Error('Event not found');
+        if (fetchErr || !eventData) throw new Error('Event not found');
 
-        const currentTaken = event.spots_taken || 0;
-        if (currentTaken >= event.spots_total) {
+        const currentTaken = eventData.spots_taken || 0;
+        if (currentTaken >= eventData.spots_total) {
             return res.status(400).json({ error: 'No spots available' });
         }
 
