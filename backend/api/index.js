@@ -83,8 +83,16 @@ app.post('/api/events', ClerkExpressWithAuth(), async (req, res) => {
             .from('events')
             .insert([
                 {
-                    title, date, time, location, category, description, spots_total, image_url,
-                    created_by: req.auth.userId
+                    title,
+                    date,
+                    time,
+                    location,
+                    category,
+                    description,
+                    spots_total: parseInt(spots_total) || 10,
+                    image_url,
+                    created_by: req.auth.userId,
+                    spots_taken: 0
                 }
             ])
             .select();
@@ -93,7 +101,7 @@ app.post('/api/events', ClerkExpressWithAuth(), async (req, res) => {
         res.status(201).json(data[0]);
     } catch (err) {
         console.error('Error creating event:', err);
-        res.status(500).json({ error: 'Failed to create event' });
+        res.status(500).json({ error: err.message || 'Failed to create event' });
     }
 });
 
