@@ -20,6 +20,8 @@ const NavItem = ({ to, icon: Icon, label, isActive }) => (
     </Link>
 );
 
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/clerk-react';
+
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
@@ -74,7 +76,24 @@ const Navbar = () => {
                     ))}
                 </div>
 
-                {/* Sign In Removed */}
+                <div className="mt-auto pt-6 border-t border-white/10">
+                    <SignedOut>
+                        <div className="px-4 py-3">
+                            <SignInButton mode="modal">
+                                <button className="flex items-center gap-3 w-full text-gray-400 hover:text-white transition-all">
+                                    <User size={20} />
+                                    <span className="font-medium">Sign In</span>
+                                </button>
+                            </SignInButton>
+                        </div>
+                    </SignedOut>
+                    <SignedIn>
+                        <div className="flex items-center gap-3 px-4 py-3">
+                            <UserButton afterSignOutUrl="/" />
+                            <span className="text-sm font-medium text-gray-400">Account</span>
+                        </div>
+                    </SignedIn>
+                </div>
             </motion.nav>
 
             {/* Overlay for mobile */}

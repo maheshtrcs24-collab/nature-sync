@@ -3,6 +3,8 @@ import cors from 'cors';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 
+import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node';
+
 dotenv.config();
 
 const app = express();
@@ -11,6 +13,13 @@ const port = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Clerk Configuration
+const clerkSecretKey = process.env.CLERK_SECRET_KEY;
+if (!clerkSecretKey) {
+    console.error('CLERK_SECRET_KEY is missing');
+}
+
 
 // Supabase Init
 const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
@@ -45,9 +54,13 @@ app.get('/api/events', async (req, res) => {
     }
 });
 
-// POST /api/events - Create an event (Anonymous)
-app.post('/api/events', async (req, res) => {
-    const { title, date, time, location, category, description, spots_total, image_url, user_id } = req.body;
+// POST /api/events - Create an event (Protected by Clerk)
+app.post('/api/events', ClerkExpressWithAuth(), async (req, res) => {
+    if (!req.auth.userId) {
+        return res.status(401).json({ error: 'Unauthenticated' });
+    }
+
+    const { title, date, time, location, category, description, spots_total, image_url } = req.body;
 
     try {
         const { data, error } = await supabase
@@ -55,7 +68,7 @@ app.post('/api/events', async (req, res) => {
             .insert([
                 {
                     title, date, time, location, category, description, spots_total, image_url,
-                    created_by: user_id || null
+                    created_by: req.auth.userId
                 }
             ])
             .select();

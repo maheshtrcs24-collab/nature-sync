@@ -7,8 +7,13 @@ import Input from '../components/ui/Input';
 import { Upload } from 'lucide-react';
 import { API_URL } from '../lib/api';
 
+import { SignInButton, useAuth, useUser } from '@clerk/clerk-react';
+
 const AddEvent = () => {
     const navigate = useNavigate();
+    const { isLoaded, userId, getToken } = useAuth();
+    const { user } = useUser();
+
     const [formData, setFormData] = useState({
         title: '',
         date: '',
@@ -31,19 +36,25 @@ const AddEvent = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!userId) {
+            alert('Please sign in to create an event');
+            return;
+        }
+
         setLoading(true);
 
-
-
         try {
+            const token = await getToken();
             const response = await fetch(`${API_URL}/api/events`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
                     ...formData,
-                    // user_id: user.id (Optional/Anonymous)
+                    userId: userId // Clerk UserId
                 })
             });
 
@@ -60,6 +71,22 @@ const AddEvent = () => {
         }
         setLoading(false);
     };
+
+    if (!isLoaded) return <div className="text-center py-20">Loading...</div>;
+
+    if (!userId) {
+        return (
+            <div className="max-w-2xl mx-auto text-center py-20">
+                <GlassCard className="p-12">
+                    <h2 className="text-2xl font-bold mb-4">Host your own event!</h2>
+                    <p className="text-gray-400 mb-8">Please sign in to create and manage nature events.</p>
+                    <SignInButton mode="modal">
+                        <Button>Sign In to Continue</Button>
+                    </SignInButton>
+                </GlassCard>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-2xl mx-auto">
