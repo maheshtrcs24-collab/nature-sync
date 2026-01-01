@@ -120,6 +120,21 @@ app.post('/api/events/:id/join', ClerkExpressWithAuth(), async (req, res) => {
     const userId = req.auth.userId;
 
     try {
+        // 0. Check if user is the creator (prevent self-join)
+        const { data: event, error: fetchError } = await supabase
+            .from('events')
+            .select('created_by')
+            .eq('id', eventId)
+            .single();
+
+        if (fetchError || !event) {
+            return res.status(404).json({ error: 'Event not found' });
+        }
+
+        if (event.created_by === userId) {
+            return res.status(400).json({ error: 'You cannot join your own event' });
+        }
+
         // 1. Check if already joined
         const { data: existing } = await supabase
             .from('registrations')
@@ -244,26 +259,6 @@ app.delete('/api/events/:id', ClerkExpressWithAuth(), async (req, res) => {
             const { data: event } = await supabase.from('events').select('created_by').eq('id', eventId).single();
             if (!event || event.created_by !== userId) {
                 return res.status(403).json({ error: 'Unauthorized to delete this event' });
-
-                // GET /api/user/role - Check if user is admin
-                app.get('/api/user/role', ClerkExpressWithAuth(), async (req, res) => {
-                    if (!req.auth.userId) return res.status(401).json({ error: 'Unauthenticated' });
-
-                    try {
-                        const { clerkClient } = await import('@clerk/clerk-sdk-node');
-                        const client = clerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
-                        const user = await client.users.getUser(req.auth.userId);
-                        const userEmail = user.emailAddresses[0]?.emailAddress;
-
-                        const ADMIN_EMAILS = ['maheshtr.cs24@bmsce.ac.in'];
-                        const isAdmin = ADMIN_EMAILS.includes(userEmail);
-
-                        res.json({ isAdmin, email: userEmail });
-                    } catch (err) {
-                        console.error(err);
-                        res.status(500).json({ error: err.message });
-                    }
-                });
             }
         }
 
@@ -271,6 +266,26 @@ app.delete('/api/events/:id', ClerkExpressWithAuth(), async (req, res) => {
         if (error) throw error;
 
         res.json({ message: 'Event deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// GET /api/user/role - Check if user is admin
+app.get('/api/user/role', ClerkExpressWithAuth(), async (req, res) => {
+    if (!req.auth.userId) return res.status(401).json({ error: 'Unauthenticated' });
+
+    try {
+        const { clerkClient } = await import('@clerk/clerk-sdk-node');
+        const client = clerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+        const user = await client.users.getUser(req.auth.userId);
+        const userEmail = user.emailAddresses[0]?.emailAddress;
+
+        const ADMIN_EMAILS = ['maheshtr.cs24@bmsce.ac.in'];
+        const isAdmin = ADMIN_EMAILS.includes(userEmail);
+
+        res.json({ isAdmin, email: userEmail });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: err.message });
