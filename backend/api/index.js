@@ -3,7 +3,7 @@ import cors from 'cors';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 
-import { ClerkExpressWithAuth } from '@clerk/clerk-sdk-node';
+import { ClerkExpressWithAuth, clerkClient } from '@clerk/clerk-sdk-node';
 
 dotenv.config();
 
@@ -245,9 +245,7 @@ app.delete('/api/events/:id', ClerkExpressWithAuth(), async (req, res) => {
 
     try {
         // Get user's email from Clerk
-        const { clerkClient } = await import('@clerk/clerk-sdk-node');
-        const client = clerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
-        const user = await client.users.getUser(userId);
+        const user = await clerkClient.users.getUser(userId);
         const userEmail = user.emailAddresses[0]?.emailAddress;
 
         // Admin list
@@ -277,9 +275,7 @@ app.get('/api/user/role', ClerkExpressWithAuth(), async (req, res) => {
     if (!req.auth.userId) return res.status(401).json({ error: 'Unauthenticated' });
 
     try {
-        const { clerkClient } = await import('@clerk/clerk-sdk-node');
-        const client = clerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
-        const user = await client.users.getUser(req.auth.userId);
+        const user = await clerkClient.users.getUser(req.auth.userId);
         const userEmail = user.emailAddresses[0]?.emailAddress;
 
         const ADMIN_EMAILS = ['maheshtr.cs24@bmsce.ac.in'];
