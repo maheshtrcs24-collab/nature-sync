@@ -1,4 +1,5 @@
 import React from 'react'; // Deployment v1.0.2 - Event Joining Live
+import { Toaster } from 'react-hot-toast';
 
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
@@ -16,6 +17,7 @@ import EventDetails from './pages/EventDetails';
 function App() {
     return (
         <Router>
+            <Toaster position="top-center" reverseOrder={false} />
             <Routes>
                 <Route element={<Layout />}>
                     <Route path="/" element={<Home />} />

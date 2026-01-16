@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@clerk/clerk-react';
 import { API_URL } from '../lib/api';
@@ -42,7 +43,7 @@ const EventDetails = () => {
             setEvent(data);
         } catch (error) {
             console.error('Error fetching event:', error);
-            alert('Event not found');
+            toast.error('Event not found');
             navigate('/explore');
         } finally {
             setLoading(false);
@@ -51,7 +52,7 @@ const EventDetails = () => {
 
     const handleJoin = async () => {
         if (!userId) {
-            alert('Please sign in to join events');
+            toast.error('Please sign in to join events');
             return;
         }
 
@@ -65,11 +66,11 @@ const EventDetails = () => {
 
             if (!response.ok) {
                 const err = await response.json();
-                alert(err.error || 'Failed to join');
+                toast.error(err.error || 'Failed to join');
                 return;
             }
 
-            alert('Successfully joined!');
+            toast.success('Successfully joined!');
             // Refresh event data to show updated spots
             const updatedResponse = await fetch(`${API_URL}/api/events/${id}`);
             const updatedData = await updatedResponse.json();
@@ -93,11 +94,11 @@ const EventDetails = () => {
 
             if (!response.ok) {
                 const err = await response.json();
-                alert(err.error || 'Failed to delete');
+                toast.error(err.error || 'Failed to delete');
                 return;
             }
 
-            alert('Event deleted!');
+            toast.success('Event deleted!');
             navigate('/explore');
         } catch (error) {
             console.error('Delete error:', error);

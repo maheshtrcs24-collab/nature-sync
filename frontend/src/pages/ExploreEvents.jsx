@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { Calendar, MapPin, Clock, Pencil, Trash2 } from 'lucide-react';
@@ -54,7 +55,7 @@ const ExploreEvents = () => {
 
     const handleJoin = async (eventId) => {
         if (!userId) {
-            alert('Please sign in to join events');
+            toast.error('Please sign in to join events');
             return;
         }
 
@@ -67,11 +68,11 @@ const ExploreEvents = () => {
 
             if (!response.ok) {
                 const err = await response.json();
-                alert(err.error || 'Failed to join');
+                toast.error(err.error || 'Failed to join');
                 return;
             }
 
-            alert('Successfully joined!');
+            toast.success('Successfully joined!');
             fetchEvents(); // Refresh
         } catch (error) {
             console.error('Join error:', error);
@@ -90,11 +91,11 @@ const ExploreEvents = () => {
 
             if (!response.ok) {
                 const err = await response.json();
-                alert(err.error || 'Failed to delete');
+                toast.error(err.error || 'Failed to delete');
                 return;
             }
 
-            alert('Event deleted!');
+            toast.success('Event deleted!');
             fetchEvents();
         } catch (error) {
             console.error('Delete error:', error);
